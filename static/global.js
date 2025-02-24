@@ -13,36 +13,36 @@ function $$ (selector, context = document) {
 // }
 
 // step 3.1
-let pages = [
-	{url: "./", title: "Home"},
-	{url: "./projects", title: "Projects"},
-    {url: "./contact", title: "Contact"},
-    {url: "https://github.mit.edu/danahua", title: "GitHub"},
-	// add the rest of your pages here
-];
+// let pages = [
+// 	{url: "./", title: "Home"},
+// 	{url: "/projects", title: "Projects"},
+//     {url: "/contact", title: "Contact"},
+//     {url: "https://github.mit.edu/danahua", title: "GitHub"},
+// 	// add the rest of your pages here
+// ];
 
-let nav = document.createElement("nav");
-document.body.prepend(nav);
+// let nav = document.createElement("nav");
+// document.body.prepend(nav);
 
-for (let p of pages) {
-	let url = p.url;
-	let title = p.title;
+// for (let p of pages) {
+// 	let url = p.url;
+// 	let title = p.title;
 
-    let a = document.createElement("a");
-    a.href = url;
-    a.textContent = title;
+//     let a = document.createElement("a");
+//     a.href = url;
+//     a.textContent = title;
     
 
-    if (a.host === location.host && a.pathname === location.pathname) {
-        a.classList.add("current");
-    }
+//     if (a.host === location.host && a.pathname === location.pathname) {
+//         a.classList.add("current");
+//     }
 
-    if (a.host !== location.host) {
-        a.target = "_blank";
-    }
+//     if (a.host !== location.host) {
+//         a.target = "_blank";
+//     }
 
-    nav.append(a);
-}
+//     nav.append(a);
+// }
 
 // step 4
 document.body.insertAdjacentHTML("afterbegin", `
