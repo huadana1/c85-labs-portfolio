@@ -1,2 +1,4 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<h1>Dana</h1>
+<p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Commodi numquam sed labore sunt, facere at vero repellendus adipisci deleniti consequatur? Pariatur ipsum rerum explicabo sit expedita, voluptatum soluta repellat nostrum.</p>
+
+<img src="images/dana.jpg" alt="headshot of me"/>
