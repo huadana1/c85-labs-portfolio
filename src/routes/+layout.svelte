@@ -1,5 +1,6 @@
 <script>
     import { page } from "$app/stores";
+    import "../style.css";
 
     let pages = [
         { url: "./", title: "Home" },
