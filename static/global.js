@@ -45,30 +45,30 @@ function $$ (selector, context = document) {
 // }
 
 // step 4
-document.body.insertAdjacentHTML("afterbegin", `
-	<label class="color-scheme">
-		Theme:
-		<select>
-			<option value="light dark">Auto</option>
-            <option value="dark">Dark</option>
-            <option value="light">Light</option>
-		</select>
-	</label>`
-);
+// document.body.insertAdjacentHTML("afterbegin", `
+// 	<label class="color-scheme">
+// 		Theme:
+// 		<select>
+// 			<option value="light dark">Auto</option>
+//             <option value="dark">Dark</option>
+//             <option value="light">Light</option>
+// 		</select>
+// 	</label>`
+// );
 
-let select = document.querySelector("select");
+// let select = document.querySelector("select");
 
-select.addEventListener("input", function (event) {
-	console.log("color scheme changed to", event.target.value);
-    document.documentElement.style.setProperty("color-scheme", event.target.value);
-    localStorage.colorScheme = event.target.value;
-});
+// select.addEventListener("input", function (event) {
+// 	console.log("color scheme changed to", event.target.value);
+//     document.documentElement.style.setProperty("color-scheme", event.target.value);
+//     localStorage.colorScheme = event.target.value;
+// });
 
-if ("colorScheme" in localStorage) {
-    // set color schemee to the stored local value
-    document.documentElement.style.setProperty("color-scheme", localStorage.colorScheme);
-    select.value = localStorage.colorScheme;
-}
+// if ("colorScheme" in localStorage) {
+//     // set color schemee to the stored local value
+//     document.documentElement.style.setProperty("color-scheme", localStorage.colorScheme);
+//     select.value = localStorage.colorScheme;
+// }
 
 // step 5
 let form = document.querySelector("form");
@@ -86,6 +86,10 @@ form?.addEventListener("submit", function (event) {
     location.href = url;
 })
 
+// lab 5
+let root = document.documentElement;
+let colorScheme = localStorage.colorScheme ?? "light dark";
+root.style.setProperty("color-scheme", colorScheme);
 
 
 
