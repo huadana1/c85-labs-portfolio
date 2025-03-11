@@ -59,22 +59,60 @@
     
     
 
-    svg:has(path:hover) path:not(:hover) {
+    /* svg:has(path:hover) path:not(:hover) {
         opacity: 50%;
-    }
+    } */
 
     path {
         transition: 300ms;
     }
 
-    .selected {
+    /* .selected {
         --color: oklch(60% 45% 0) !important;
 
         &:is(path) {
             fill: var(--color);
         }
-    }
+    } */
     
+    /* When any path is hovered, make non-hovered paths 50% opacity */
+    svg:has(path:hover) path:not(:hover) {
+        opacity: 50%;
+    }
+
+    /* When a path is selected, make all non-selected paths 50% opacity */
+    svg:has(.selected) path:not(.selected) {
+        opacity: 50%;
+    }
+
+    /* Ensure hovered path always has full opacity */
+    path:hover {
+        opacity: 100% !important;
+    }
+
+    /* Selected paths should have a specific fill color */
+    .selected {
+        --color: oklch(60% 45% 0) !important;
+        
+        &:is(path) {
+            fill: var(--color) !important;
+        }
+        
+        &:is(li) {
+            color: var(--color);
+        }
+    }
+    /* .selected {
+	--color: oklch(60% 45% 0) !important;
+
+	&:is(path) {
+		fill: var(--color);
+	} */
+/* } */
+
+    ul:has(.selected) li:not(.selected) {
+        color: gray;
+    }
 
     .swatch {
         /* display: inline-block; */

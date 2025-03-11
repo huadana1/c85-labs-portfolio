@@ -4,17 +4,6 @@
     import Pie from "$lib/Pie.svelte";
     import * as d3 from 'd3';
 
-    let selectedYearIndex = -1;
-
-    let selectedYear;
-    $: selectedYear = selectedYearIndex > -1 ? pieData[selectedYearIndex].label : null;
-    $: filteredByYear = projects.filter(project => {
-        if (selectedYear) {
-            let values = Object.values(project).join("\n").toLowerCase();
-            return values.includes(selectedYear);
-        }
-        return true;
-    });
 
 
     let query = "";
@@ -23,6 +12,17 @@
         if (query) {
             let values = Object.values(project).join("\n").toLowerCase();
             return values.includes(query.toLowerCase());
+        }
+        return true;
+    });
+
+    let selectedYearIndex = -1;
+
+    let selectedYear;
+    $: selectedYear = selectedYearIndex > -1 ? pieData[selectedYearIndex].label : null;
+    $: filteredByYear = filteredProjects.filter(project => {
+        if (selectedYear) {
+            return project.year === selectedYear;
         }
         return true;
     });
@@ -59,3 +59,9 @@
         <Project data={p} />
     {/each}
 </div>
+
+<style>
+    input {
+        width: 100%;
+    }
+</style>
