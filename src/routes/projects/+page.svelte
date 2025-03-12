@@ -44,8 +44,6 @@
 <svelte:head>
   <title>Projects</title>
 </svelte:head>
-{selectedYearIndex} {filteredByYear}
-
 
 <h1>{projects.length} Projects</h1>
 
