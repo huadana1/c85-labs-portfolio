@@ -57,24 +57,10 @@
         overflow: visible;
     }
     
-    
-
-    /* svg:has(path:hover) path:not(:hover) {
-        opacity: 50%;
-    } */
-
     path {
         transition: 300ms;
     }
 
-    /* .selected {
-        --color: oklch(60% 45% 0) !important;
-
-        &:is(path) {
-            fill: var(--color);
-        }
-    } */
-    
     /* When any path is hovered, make non-hovered paths 50% opacity */
     svg:has(path:hover) path:not(:hover) {
         opacity: 50%;
@@ -102,21 +88,12 @@
             color: var(--color);
         }
     }
-    /* .selected {
-	--color: oklch(60% 45% 0) !important;
-
-	&:is(path) {
-		fill: var(--color);
-	} */
-/* } */
 
     ul:has(.selected) li:not(.selected) {
         color: gray;
     }
 
     .swatch {
-        /* display: inline-block; */
-        /* /* width: 10px; */
         height: 10px; 
         aspect-ratio: 1/1;
         background-color: var(--color);
@@ -125,7 +102,7 @@
 
     ul {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(9em, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(8em, 1fr));
     }
 
     li {

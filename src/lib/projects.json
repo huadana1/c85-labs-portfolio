@@ -2,7 +2,7 @@
     {
         "title": "Lorem ipsum dolor sit.",
         "year": 2021, 
-        "image": "/images/dana.jpg",
+        "image": "./images/dana.jpg",
         "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure iste sint accusantium itaque earum eveniet\r\n            magnam laudantium! Excepturi quam non suscipit quaerat error accusamus atque aspernatur itaque sapiente\r\n            repellendus! Hic."
     },
     {
