@@ -10,8 +10,11 @@
 
     onMount(async () => {
       try {
-        const response = await fetch("https://api.github.com/users/huadana1");
-        githubData = await response.json();
+        if (!!githubData) {
+            const response = await fetch("https://api.github.com/users/huadana1");
+            githubData = await response.json();
+        }
+        
       } catch (err) {
         error = err;
       }

@@ -11,17 +11,14 @@
     let avg_depth = 0;
 
     onMount(async () => {
-        if (data.length == 0) {
-            data = await d3.csv("/loc.csv", row => ({
-                ...row,
-                line: Number(row.line), // or just +row.line
-                depth: Number(row.depth),
-                length: Number(row.length),
-                date: new Date(row.date + "T00:00" + row.timezone),
-                datetime: new Date(row.datetime)
-            }));
-        }
-        
+        data = await d3.csv("/loc.csv", row => ({
+            ...row,
+            line: Number(row.line), // or just +row.line
+            depth: Number(row.depth),
+            length: Number(row.length),
+            date: new Date(row.date + "T00:00" + row.timezone),
+            datetime: new Date(row.datetime)
+        }));
 
     
         commits = d3.groups(data, d => d.commit).map(([commit, lines]) => {
