@@ -1,80 +1,186 @@
 <script>
-    import * as d3 from 'd3';
+	import * as d3 from 'd3';
 
-    export let data = [];
+	export let data = [];
+	export let width = 400;
+	export let barHeight = 30;
+	export let colorScale = d3.scaleOrdinal(d3.schemeTableau10);
 
-    let width = 400;
-    let height = 50; // One bar height
-    let margin = { left: 50, right: 10, top: 10, bottom: 10 };
+	let selectedIndex = -1;
+	let hoveredIndex = -1;
+	
 
-    // Process data: Group by year and count occurrences
-    let rolledData = d3.rollups(data, v => v.length, d => d.year);
+	const MIN_LABEL_WIDTH = 40; // Minimum width to place label inside
 
-    let total = d3.sum(rolledData, ([, count]) => count);
+	// Direct mapping from flatRollup-like data: [label, count]
+	$: barData = data.map(([label, count]) => ({ label, count }));
 
-    let barData = rolledData.map(([year, count]) => ({
-        year,
-        count,
-        percent: count / total // Normalize to percentage
-    }));
+    $: keys = data.map(d => d[0]);
+    $: dataForStack = [Object.fromEntries(data)];
+    $: stackedData = d3.stack().keys(keys)(dataForStack);
+    $: total = d3.max(stackedData, series => d3.max(series, d => d[1])) || 1;
 
-    // Cumulative percentage to position stacked segments
-    let cumulative = 0;
-    barData = barData.map(d => {
-        let start = cumulative;
-        cumulative += d.percent;
-        return { ...d, start, end: cumulative };
-    });
+	// X scale for bar length
+	$: xScale = d3.scaleLinear()
+			.domain([0, total]) // Avoid empty data crash
+			.range([0, width]);
 
-    // Scales
-    let colorScale = d3.scaleOrdinal()
-        .domain(barData.map(d => d.year))
-        .range(d3.schemeTableau10);
+	// // Color scale for bar colors
+	// $: colorScale = d3.scaleOrdinal()
+	// 		.domain(barData.map(d => d.label))
+	// 		.range(d3.schemeTableau10);
 
 </script>
 
-<svg {width} height={height + margin.top + margin.bottom}>
-    <g transform={`translate(${margin.left}, ${margin.top})`}>
-        {#each barData as d}
-            <rect 
-                x={d.start * (width - margin.left - margin.right)}
-                y="0"
-                width={(d.percent * (width - margin.left - margin.right))}
-                height={height}
-                fill={colorScale(d.year)}
-                stroke="white"
-            />
-            
-            <!-- Percentage Labels -->
-            {#if d.percent > 0.1} <!-- Only show labels for larger sections -->
-                <text 
-                    x={(d.start + d.percent / 2) * (width - margin.left - margin.right)}
-                    y={height / 2}
-                    dy=".35em"
-                    text-anchor="middle"
-                    fill="white"
-                    font-size="12px"
-                >
-                    {Math.round(d.percent * 100)}%
-                </text>
-            {/if}
-        {/each}
-    </g>
+<div class="container">
+    <svg {width} height={barHeight}>
+		{#each stackedData as series, i (series.key)}
+			{#each series as d, j}
+				<rect
+					class:selected={selectedIndex === i}
+					class:hovered={hoveredIndex === i}
+					x={xScale(d[0])}
+					y="0"
+					width={xScale(d[1]) - xScale(d[0])}
+					height={barHeight - 5}
+					fill={colorScale(series.key)}
+					on:click={() => selectedIndex = selectedIndex === i ? -1 : i}
+					on:mouseenter={() => hoveredIndex = i}
+					on:mouseleave={() => hoveredIndex = -1}
+				/>
+				{#if (xScale(d[1]) - xScale(d[0]) > MIN_LABEL_WIDTH)}
+					<text
+						class="label"
+						x={(xScale(d[0]) + xScale(d[1])) / 2}
+						y={barHeight / 2}
+						text-anchor="middle"
+						fill="white"
+						dominant-baseline="middle"
+					>
+						{series.key}: {d[1] - d[0]}
+					</text>
+				{/if}
+			{/each}
+		{/each}
+	</svg>
 
-    <!-- Label for the whole bar -->
-    <text 
-        x="10" 
-        y={height / 2 + margin.top} 
-        text-anchor="start" 
-        font-size="14px"
-        font-weight="bold"
-    >
-        Year
-    </text>
-</svg>
+
+	<ul class="legend">
+		{#each stackedData as series, i (series.key)}
+			<!-- {#each series as d, j} -->
+			<li
+					style="--color: {colorScale(series.key)}"
+					class:selected={selectedIndex === i}
+					on:click={() => selectedIndex = selectedIndex === i ? -1 : i}
+			>
+				<span class="swatch"></span>
+				{series.key} <em>({series[0][1] - series[0][0]})</em>
+			</li>
+		    <!-- {/each} -->
+        {/each}
+	</ul>
+</div>
 
 <style>
-    text {
-        font-family: Arial, sans-serif;
-    }
+	/* ---------- Container Layout ---------- */
+	.container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	/* ---------- Bars ---------- */
+	rect {
+		/*stroke: white;*/
+		transition: all 300ms ease;
+		cursor: pointer;
+	}
+
+	/* Hover effect */
+	rect.hovered {
+		opacity: 1;
+		/*stroke: black;*/
+		stroke-width: 2;
+	}
+
+	/* Dim others when hovering */
+	svg:has(rect.hovered) rect:not(.hovered) {
+		opacity: 0.3;
+	}
+
+	/* Selection effect */
+	rect.selected {
+		/*stroke: black;*/
+		stroke-width: 2;
+	}
+
+	/* Dim others when selected */
+	svg:has(rect.selected) rect:not(.selected) {
+		opacity: 0.3;
+	}
+
+	/* Combined hover + select */
+	rect.selected.hovered {
+		/*stroke: black;*/
+		stroke-width: 3;
+		opacity: 1;
+	}
+
+	/* ---------- Labels ---------- */
+	.label {
+		font-size: 0.75em;
+		pointer-events: none;
+		dominant-baseline: middle;
+		/* Fill is dynamically set */
+	}
+
+	/* ---------- Legend ---------- */
+	.legend {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(8em, 1fr));
+		gap: 0.5em;
+		list-style: none;
+		padding: 1em;
+		margin: 1em 0;
+		border: 1px solid;
+		background: transparent;
+		width: 100%;
+		box-sizing: border-box;
+		text-align: left;
+
+	}
+
+	/* Legend items */
+	.legend li {
+		color: var(--color);
+		cursor: pointer;
+		font-size: 0.85em;
+	}
+
+	/* Highlight selected */
+	.legend li.selected {
+		font-weight: bold;
+	}
+
+	/* Dim unselected when one selected */
+	.legend:has(.selected) li:not(.selected) {
+		color: gray;
+		opacity: 0.5;
+	}
+
+	/* Swatch */
+	.legend li .swatch {
+		background: var(--color);
+		display: inline-block;
+		width: 1em;
+		height: 1em;
+		border-radius: 0.2em;
+		margin-right: 0.25em;
+	}
+
+	/* Count formatting */
+	.legend em {
+		font-style: normal;
+		color: gray;
+	}
 </style>
