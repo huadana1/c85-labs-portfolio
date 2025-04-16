@@ -22,18 +22,40 @@
         arcs = arcData.map(d => arcGenerator(d));
     }
 
-    let colors = d3.scaleOrdinal(d3.schemeTableau10);
+        let colors = d3.scaleOrdinal(d3.schemeTableau10);
+
+    //  let colors = d3.scaleQuantize().range(d3.schemeBlues[5]); 
+
+
+    let liveText = "";
+
+    function toggleWedge (index, event) {
+        if (!event.key || event.key === "Enter") {
+            selectedIndex = selectedIndex === index ? -1 : index;
+            const d = data[index];
+            liveText = `${d.label}: ${d.value} projects selected.`;
+        }
+    }
+
+    $: description = `A pie chart showing project counts by year. ${data.map(d => `${d.label}: ${d.value} projects`).join(', ')}.`;
+
 
 </script>
 
 <div class = "pie-chart-container">
-    <svg viewBox="-50 -50 100 100">
+    <svg viewBox="-50 -50 100 100" role = "img" aria-labelledby="pie-title pie-desc">
+    <title id="pie-title">Projects by Year</title>
+    <desc id="pie-desc">{description}</desc>
+    <circle class="pie-outline" r="50" />
         {#each arcs as arc, index}
-            <path d={ arc } fill={ colors(index) } 
+            <path tabindex="0" role="button" aria-label d={ arc } fill={ colors(index) } 
             class:selected={selectedIndex === index} 
-            on:click={e => selectedIndex = selectedIndex === index ? -1 : index} />
+            on:click={e => toggleWedge(index, e)}
+            />
         {/each}
     </svg>
+
+    <p aria-live="polite" class="sr-only">{liveText}</p>
 
     <ul class="legend">
         {#each data as d, index}
@@ -43,12 +65,29 @@
             </li>
         {/each}
     </ul>
+
 </div>
 
 
 
 
 <style>
+    .sr-only {
+        position: absolute;
+        left: -9999px;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+    }
+
+    .pie-outline {
+        stroke: black;
+        fill: none;
+        stroke-width: 1;
+    }
+
+
+
     svg {
         max-width: 20em;
         margin-block: 2em;
@@ -58,13 +97,21 @@
     }
     
     path {
+        outline: none;
         transition: 300ms;
     }
 
     /* When any path is hovered, make non-hovered paths 50% opacity */
-    svg:has(path:hover) path:not(:hover) {
+    svg:has(path:hover) path:not(:hover), svg:focus-visible path:not(:focus-visible) {
         opacity: 50%;
     }
+
+    path:focus-visible {
+        stroke: white;
+        stroke-width: 2px;
+        stroke-dasharray: 4; /* Adjust the dash length as needed */
+    }
+
 
     /* When a path is selected, make all non-selected paths 50% opacity */
     svg:has(.selected) path:not(.selected) {
